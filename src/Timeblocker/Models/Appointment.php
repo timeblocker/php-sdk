@@ -58,4 +58,12 @@ class Appointment extends BaseModel {
 
 		return $this;
 	}
+
+	public function createInvoice()
+	{
+		return Invoice::create(array(
+			'client' => $this->client->uid,
+			'appointment' => $this->uid
+		));
+	}
 }
