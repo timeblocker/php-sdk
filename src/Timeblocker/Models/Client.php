@@ -3,6 +3,7 @@
 use Timeblocker\Components\BaseModel;
 use Timeblocker\Components\HttpRequest;
 use Timeblocker\Collections\Dependents;
+use Timeblocker\Models\Invoice;
 
 class Client extends BaseModel {
 	
@@ -46,5 +47,12 @@ class Client extends BaseModel {
 		$this->fill($response);
 
 		return $this;
+	}
+
+	public function createInvoice()
+	{
+		return Invoice::create(array(
+			'client' => $this->uid
+		));
 	}
 }
