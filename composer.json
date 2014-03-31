@@ -1,0 +1,21 @@
+    {
+    "name": "timeblocker/timeblocker",
+    "description": "",
+    "authors": [
+        {
+            "name": "Timeblocker, LLC",
+            "email": "support@timeblocker.co"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "guzzle/guzzle": "3.8.*@dev",
+        "nesbot/Carbon": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Timeblocker": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
