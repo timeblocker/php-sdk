@@ -39,11 +39,7 @@ class Appointment extends BaseModel {
 			'endpoint' => $this->endpoint('update') . '/confirmation'
 		));
 
-		$response = $request->put();
-
-		$this->fill($response);
-
-		return $this;
+		return $request->put();
 	}
 
 	public function sendReminder()
@@ -52,11 +48,7 @@ class Appointment extends BaseModel {
 			'endpoint' => $this->endpoint('update') . '/reminder'
 		));
 
-		$response = $request->put();
-
-		$this->fill($response);
-
-		return $this;
+		return $request->put();
 	}
 
 	public function createInvoice()
