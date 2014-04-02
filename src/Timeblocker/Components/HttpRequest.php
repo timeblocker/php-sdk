@@ -14,6 +14,8 @@ class HttpRequest {
 
 	protected $query = array();
 
+	protected $files = array();
+
 	public function __construct($params = array())
 	{
 		if(is_array($params))
@@ -32,11 +34,18 @@ class HttpRequest {
 
 	public function client()
 	{
+		$body = $this->getBody();
+
+		foreach($this->files as $file)
+		{
+			$body[$file->name] = fopen($file->path, 'r');
+		}
+
 		return new Client(array(
 			'defaults' => array(
 				'headers' => $this->getHeaders(),
-				'body'    => $this->getBody(),
 				'query'   => $this->getQuery(),
+				'body'    => $body,
 			)
 		));
 	}
@@ -141,6 +150,24 @@ class HttpRequest {
 			'username' => Timeblocker::getUsername(),
 			'password' => Timeblocker::getPassword(),
 		);
+	}
+
+	public function addFile($name, $path)
+	{
+   	 	$this->files[] = (object) array(
+   	 		'name' => $name,
+   	 		'path' => $path
+   	 	);
+	}
+
+	public function setFiles(Array $files = array())
+	{
+   	 	$this->files = $files;
+	}
+
+	public function getFiles()
+	{
+   	 	return $this->files;
 	}
 
 	public function getQuery()
