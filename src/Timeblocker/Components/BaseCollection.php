@@ -2,9 +2,9 @@
 
 abstract class BaseCollection {
 
-	protected $uid = null;
+	public $uid = null;
 
-	protected $items = array();
+	public $models = array();
 
 	protected $builder;
 
@@ -31,6 +31,16 @@ abstract class BaseCollection {
 		if(count($data))
 		{
 			$this->fill($data);
+		}
+
+		if(count($this->models))
+		{
+			$class = $this->model;
+
+			foreach($this->models as $index => $model)
+			{
+				$this->models[$index] = new $class($model);
+			}
 		}
 	}
 
@@ -73,9 +83,19 @@ abstract class BaseCollection {
 	{
 		$class = $this->model;
 
-		foreach($data as $model)
+		foreach($data as $index => $value)
 		{
-			$this->items[] = new $class($model);
+			if($index == 'models')
+			{
+				foreach($value as $model)
+				{
+					$this->models[] = new $class($model);
+				}
+			}
+			else
+			{
+				$this->$index = $value;
+			}
 		}
 
 		return $this;
@@ -83,14 +103,14 @@ abstract class BaseCollection {
 
 	public function first()
 	{
-		return isset($this->items[0]) ? $this->items[0] : null;
+		return isset($this->models[0]) ? $this->models[0] : null;
 	}
 
 	public function last()
 	{		
-		$total = count($this->items) - 1;
+		$total = count($this->models) - 1;
 
-		return isset($this->items[$total]) ? $this->items[$total] : null;
+		return isset($this->models[$total]) ? $this->models[$total] : null;
 	}
 
 	public function count()
@@ -100,7 +120,7 @@ abstract class BaseCollection {
 
 	public function each($closure)
 	{
-		foreach($this->items as $item)
+		foreach($this->models as $item)
 		{
 			$closure($item);
 		}
@@ -108,12 +128,12 @@ abstract class BaseCollection {
 
 	public function push($model)
 	{
-		array_push($this->items, $model);
+		array_push($this->models, $model);
 	}
 
 	public function pop($model)
 	{
-		array_unshift($this->items, $model);
+		array_unshift($this->models, $model);
 	}
 
 	public function getQuery()
@@ -126,22 +146,13 @@ abstract class BaseCollection {
 		return array();
 	}
 	
-	public function endpoint($method = 'read')
+	public function endpoint()
 	{
 		return rtrim(rtrim(str_replace(array(':uid', ':id'), $this->uid, $this->endpoint), '/'));
 	}
 
-	public function fetch()
+	public function parse($response)
 	{
-		$this->items = array();
-
-		$request = new HttpRequest(array(
-			'endpoint' => $this->endpoint(),
-			'query' => $this->getQuery()
-		));
-
-		$response = $request->get();
-
 		if(isset($response->data))
 		{
 			foreach($response as $param => $value)
@@ -158,6 +169,20 @@ abstract class BaseCollection {
 		{
 			$this->fill($response);
 		}
+	}
+
+	public function fetch()
+	{
+		$this->models = array();
+
+		$request = new HttpRequest(array(
+			'endpoint' => $this->endpoint(),
+			'query' => $this->getQuery()
+		));
+
+		$response = $request->get();
+
+		$this->parse($response);
 
 		return $this;
 	}
@@ -190,7 +215,7 @@ abstract class BaseCollection {
 	{
 		$response = array();
 
-		foreach($this->items as $item)
+		foreach($this->models as $item)
 		{
 			$response[] = $item->toArray();
 		}
@@ -198,17 +223,21 @@ abstract class BaseCollection {
 		return $response;
 	}
 
-	public static function all()
+	public static function all(Array $query = array())
 	{	
 		$obj = new static;
+
+		$builder = new QueryBuilder($obj);
+		$builder->query($query);
+
+		$obj->setQueryBuilder($builder);
 
 		return $obj->fetch();
 	}
 
 	public static function orderBy($order, $sort = 'asc')
 	{
-		$class = get_called_class();
-		$obj = new $class();
+		$obj = new static;
 
 		$builder = new QueryBuilder($obj);
 		$builder->orderBy($order, $sort);
