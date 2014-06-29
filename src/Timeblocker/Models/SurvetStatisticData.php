@@ -2,8 +2,8 @@
 
 use Timeblocker\Components\BaseModel;
 
-class AppointmentType extends BaseModel {
+class SurvetStatisticData extends BaseModel {
 	
-	protected $endpoint = 'type';
+	protected $endpoint = '';
+
 }
-	

@@ -1,5 +1,7 @@
 <?php namespace Timeblocker\Components;
 
+use Carbon\Carbon;
+
 abstract class BaseModel {
 
 	public $uid = null;
@@ -11,24 +13,65 @@ abstract class BaseModel {
 		'delete' => ':uid'
 	);
 
+	protected $attributes = array();
+
 	protected $endpoint;
 
 	protected $exclude = array();
 
-	public function __construct($properties = array())
+	protected $dateProperties = array(
+		'createdAt',
+		'updatedAt',
+		'deletedAt'
+	);
+
+	public function __set($attribute, $value)
 	{
-		$this->fill($properties);
+		$this->$attribute = $value;
+		
+		if(!in_array($attribute, $this->attributes))
+		{
+			$this->attributes[] = $attribute;
+		}
 	}
 
-	public function fill($properties = array())
+	public function __construct($attributes = array())
 	{
-		if(is_array($properties) || is_object($properties))
+		$this->fill($attributes);
+
+		foreach($this->dateProperties as $property)
 		{
-			foreach($properties as $prop => $value)
+			if(property_exists($this, $property))
 			{
-				$this->$prop = $value;
+				$this->$property = Carbon::parse($this->$property);
 			}
 		}
+	}
+
+	public function fill($attributes = array())
+	{
+		if(is_array($attributes) || is_object($attributes))
+		{
+			foreach($attributes as $attribute => $value)
+			{
+				$this->setAttribute($attribute, $value);
+			}
+		}
+	}
+
+	public function setAttribute($attribute, $value)
+	{
+		$this->$attribute = $value;
+	}
+
+	public function getAttribute($attribute)
+	{
+		if(property_exists($this, $attribute))
+		{
+			return $this->$attribute;
+		}
+
+		return null;
 	}
 
 	public function endpoint($method)
@@ -46,7 +89,7 @@ abstract class BaseModel {
 
 		$request = new HttpRequest(array(
 			'endpoint' => $this->endpoint('update'),
-			'body' => $this->properties()
+			'body' => $this->toArray()
 		));
 		
 		$response = $request->put();
@@ -67,7 +110,7 @@ abstract class BaseModel {
 
 		$request = new HttpRequest(array(
 			'endpoint' => $this->endpoint('create'),
-			'body' => $this->properties()
+			'body' => $this->toArray()
 		));
 
 		$response = $request->post();
@@ -92,15 +135,15 @@ abstract class BaseModel {
 
 	public function properties()
 	{
-		$properties = (new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC);
+		//$attributes = (new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC);
 
 		$data = array();
 
-		foreach($properties as $prop)
+		foreach($this->attributes as $attribute)
 		{
-			if(!in_array($prop->name, $this->exclude))
+			if(!in_array($attribute, $this->exclude))
 			{
-				$data[$prop->name] = $this->{$prop->name};
+				$data[$attribute] = $this->getAttribute($attribute);
 			}
 		}
 
@@ -121,7 +164,7 @@ abstract class BaseModel {
 			'endpoint' => $obj->endpoint('read')
 		));
 
-		$obj->fill($request->get());
+		$obj = new static($request->get());
 
 		return $obj;
 	}

@@ -9,6 +9,21 @@ class Client extends BaseModel {
 	
 	protected $endpoint = 'client';
 
+	public function __construct($data = array())
+	{
+		parent::__construct($data);
+
+		if(isset($this->lastAppointment))
+		{
+			$this->lastAppointment = new Appointment($this->lastAppointment);
+		}
+
+		if(isset($this->nextAppointment))
+		{
+			$this->nextAppointment = new Appointment($this->nextAppointment);
+		}
+	}
+
 	public function dependents()
 	{
 		return Dependents::all($this->uid);

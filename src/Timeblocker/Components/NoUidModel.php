@@ -11,12 +11,13 @@ class NoUidModel extends BaseModel {
 		'delete' => ''
 	);
 
-	public static function retrieve()
+	public static function retrieve($data = array())
 	{
 		$obj = new static;
 
 		$request = new HttpRequest(array(
-			'endpoint' => $obj->endpoint('read')
+			'endpoint' => $obj->endpoint('read'),
+			'query' => $data
 		));
 
 		$obj->fill($request->get());

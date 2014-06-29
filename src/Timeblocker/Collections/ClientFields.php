@@ -8,24 +8,13 @@ class ClientFields extends BaseCollection {
 
 	protected $model = 'Timeblocker\Models\ClientField';
 
-	
-	public function parse()
+	public function parse($response = array())
 	{
-		if(isset($response->data))
+		$class = $this->model;
+
+		foreach($response as $index => $data)
 		{
-			foreach($response as $param => $value)
-			{
-				if(property_exists($this, $param))
-				{
-					$this->$param = $value;
-				}
-			}
-			
-			$this->fill($response->data);
-		}
-		else
-		{
-			$this->fill($response);
+			$this->models[] = new $class($data);
 		}
 	}
 

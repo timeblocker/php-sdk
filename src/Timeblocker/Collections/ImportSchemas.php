@@ -6,5 +6,5 @@ class ImportSchemas extends BaseCollection {
 	
 	protected $endpoint = 'schemas';
 
-	protected $model = 'Timeblocker\Models\ImportSchemas';
+	protected $model = 'Timeblocker\Models\ImportSchema';
 }

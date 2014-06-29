@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Timeblocker\Components\BaseCollection;
+use Timeblocker\Components\HttpRequest;
 use Timeblocker\Collections\SearchAppointments;
 use Timeblocker\Models\AppointmentType;
 use Timeblocker\Models\Availability;
@@ -25,5 +26,17 @@ class Appointments extends BaseCollection {
 		));
 
 		return $availability;
+	}
+
+	public static function export($file)
+	{
+		$obj = new static;
+
+		$request = new HttpRequest(array(
+			'endpoint' => 'appointments/export',
+			'saveTo' => $file
+		));
+
+		$response = $request->get();		
 	}
 }

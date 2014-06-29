@@ -10,14 +10,19 @@ class Host extends BaseModel {
 	{
 		$properties = parent::properties();
 
-		if(empty($properties['fontColor']))
+		if(empty($properties['fontColor']) && isset($this->settings->fontColor))
 		{
 			$properties['fontColor'] = $this->settings->fontColor;
 		}
 
-		if(empty($properties['backgroundColor']))
+		if(empty($properties['backgroundColor']) && isset($this->settings->backgroundColor))
 		{
 			$properties['backgroundColor'] = $this->settings->backgroundColor;
+		}
+
+		if(empty($properties['private']) && isset($this->settings->private))
+		{
+			$properties['private'] = $this->settings->private;
 		}
 
 		return $properties;

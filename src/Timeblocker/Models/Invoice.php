@@ -28,11 +28,13 @@ class Invoice extends BaseAddon {
 		return $request->post();
 	}
 
-	public function removeItem(Array $data = array())
+	public function removeItem($uid)
 	{
 		$request = new HttpRequest(array(
 			'endpoint' => 'addon/invoice/' . $this->uid . '/remove',
-			'body' => $data
+			'body' => array(
+				'row' => $uid
+			)
 		));
 
 		return $request->post();
@@ -48,13 +50,28 @@ class Invoice extends BaseAddon {
 		return $request->post();
 	}
 
-	public function paid()
+	public function paid($paidAt = null, $paymentType = null)
 	{
+		$query = array();
+
+		if($paidAt)
+		{
+			$query['paidAt'] = $paidAt;
+		}
+		
+		if($paymentType)
+		{
+			$query['paymentType'] = $paymentType;
+		}
+		
 		$request = new HttpRequest(array(
 			'endpoint' => 'addon/invoice/' . $this->uid . '/paid',
+			'query' => $query
 		));
 
-		return $request->post();
+		$this->fill($request->post());
+
+		return $this;
 	}
 
 	public function unpaid()
@@ -63,7 +80,9 @@ class Invoice extends BaseAddon {
 			'endpoint' => 'addon/invoice/' . $this->uid . '/unpaid',
 		));
 
-		return $request->post();
+		$this->fill($request->post());
+
+		return $this;
 	}
 
 	public function sendReminder()

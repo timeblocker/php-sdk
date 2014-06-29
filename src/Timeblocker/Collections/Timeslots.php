@@ -10,6 +10,24 @@ class Timeslots extends BaseCollection {
 
 	protected $model = 'Timeblocker\Models\Timeslot';
 
+	
+	public function parse($response = array())
+	{
+		$class = $this->model;
+
+		if(is_array($response))
+		{
+			foreach($response as $index => $data)
+			{
+				$this->models[] = new $class($data);
+			}
+		}
+		else
+		{
+			parent::parse($response);
+		}
+	}
+
 	public static function range(Carbon $start, Carbon $end)
 	{
 		$obj = new static;

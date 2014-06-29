@@ -1,6 +1,7 @@
 <?php namespace Timeblocker\Collections;
 
 use Timeblocker\Components\BaseCollection;
+use Timeblocker\Components\HttpRequest;
 use Timeblocker\Collections\SearchHosts;
 
 class Hosts extends BaseCollection {

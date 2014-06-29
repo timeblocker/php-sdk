@@ -5,110 +5,139 @@ use Timeblocker\Components\Request;
 
 class Timeblocker {
 
-	protected static $account;
-	protected static $username;
-	protected static $password;
-	protected static $key;
-	protected static $version = 'v1';
-	protected static $protocol = 'https://';
-	protected static $domain = 'timeblocker.co/api';
+	protected static $authToken;
+	protected static $account = NULL;
+	protected static $version = '1.0';
+	protected static $domain = 'timeblocker.dev';
+	protected static $url = 'http://{account}.{domain}/api/v{version}';
 
-	public static function auth(array $data)
+	public static function init(array $data)
 	{
 		foreach($data as $var => $value)
 		{
-			self::$$var = $value;
+			static::$$var = $value;
 		}
 
-		if(empty(self::$account))
+		if(empty(static::$account))
 		{
 			throw new InvalidCredentialsException('Invalid Account');
 		}
 
-		if(empty(self::$username))
+		/*
+		if(empty(static::$username))
 		{
 			throw new InvalidCredentialsException('Invalid Username');
 		}
 
-		if(empty(self::$password))
+		if(empty(static::$password))
 		{
 			throw new InvalidCredentialsException('Invalid Password');
 		}
 
-		if(empty(self::$key))
+		if(empty(static::$key))
 		{
 			throw new InvalidCredentialsException('Invalid API Key');
 		}
+		*/
 	}
 
 	public static function setAccount($account)
 	{
-		self::$account = $account;
+		static::$account = $account;
 	}
 
 	public static function getAccount()
 	{
-		return self::$account;
+		return static::$account;
 	}
 
 	public static function setKey($key)
 	{
-		self::$key = $key;
+		static::$key = $key;
 	}
 
 	public static function getKey()
 	{
-		return self::$key;
+		return static::$key;
 	}
 
 	public static function setUsername($username)
 	{
-		self::$username = $username;
+		static::$username = $username;
 	}
 
 	public static function getUsername()
 	{
-		return self::$username;
+		return static::$username;
 	}
 
 	public static function setPassword($password)
 	{
-		self::$password = $password;
+		static::$password = $password;
 	}
 
 	public static function getPassword()
 	{
-		return self::$password;
+		return static::$password;
 	}
 
 	public static function setVersion($version)
 	{
-		self::$version = $version;
+		static::$version = $version;
 	}
 
 	public static function getVersion()
 	{
-		return self::$version;
+		return static::$version;
 	}
 
 	public static function setProtocol($protocol)
 	{
-		self::$protocol = $protocol;
+		static::$protocol = $protocol;
 	}
 
 	public static function getProtocol()
 	{
-		return self::$protocol;
+		return static::$protocol;
 	}
 
 	public static function setDomain($domain)
 	{
-		self::$domain = $domain;
+		static::$domain = $domain;
 	}
 
 	public static function getDomain()
 	{
-		return self::$domain;
+		return static::$domain;
+	}
+
+	public static function setAuthToken($token)
+	{
+		static::$authToken = $token;
+	}
+
+	public static function getAuthToken()
+	{
+		return static::$authToken;
+	}
+
+	public static function setApiUrl($url)
+	{
+		static::$url = $url;
+	}
+
+	public static function getApiUrl()
+	{
+		if(is_null(static::getAccount()))
+		{
+			throw new NoAccountSetException();
+		}
+
+		$return = str_replace('{account}', static::getAccount(), static::$url);
+		$return = str_replace('{version}', static::getVersion(), $return);
+		$return = str_replace('{domain}', static::getDomain(), $return);
+
+		return $return;
 	}
 
 	/*
@@ -116,7 +145,7 @@ class Timeblocker {
 	{
 		if(count($data))
 		{
-			self::auth($data);
+			static::auth($data);
 		}
 
 		$request = new Request();

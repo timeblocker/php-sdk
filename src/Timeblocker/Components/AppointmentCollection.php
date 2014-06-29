@@ -13,9 +13,7 @@ abstract class AppointmentCollection extends BaseCollection {
 
 		foreach($response as $index => $row)
 		{
-			$response[$index]->appointments = new Appointments(array(
-				'models' => $row->appointments
-			));
+			$response[$index]->appointments = new Appointments($row->appointments);
 		}
 
 		$this->models = $response;

@@ -27,19 +27,27 @@ abstract class BaseCollection {
 	protected $model;
 
 	public function __construct($data = array())
-	{
-		if(count($data))
+	{	
+		// If response object is passed, fill the object with properties and
+		// assign the models to the data array to be instantiated. 
+		if(is_object($data))
 		{
 			$this->fill($data);
+
+			if(isset($data->data))
+			{
+				$data = $data->data;
+			}
 		}
 
-		if(count($this->models))
+		// If data is array, assume it's filled with model data objects.
+		if(is_array($data))
 		{
 			$class = $this->model;
 
-			foreach($this->models as $index => $model)
+			foreach($data as $index => $model)
 			{
-				$this->models[$index] = new $class($model);
+				$this->models[] = new $class($model);
 			}
 		}
 	}
@@ -79,22 +87,13 @@ abstract class BaseCollection {
 		$this->builder = $builder;
 	}
 
-	public function fill(Array $data = array())
+	public function fill($data = array())
 	{
-		$class = $this->model;
-
-		foreach($data as $index => $value)
+		foreach($data as $param => $value)
 		{
-			if($index == 'models')
+			if(property_exists($this, $param))
 			{
-				foreach($value as $model)
-				{
-					$this->models[] = new $class($model);
-				}
-			}
-			else
-			{
-				$this->$index = $value;
+				$this->$param = $value;
 			}
 		}
 
@@ -103,27 +102,40 @@ abstract class BaseCollection {
 
 	public function first()
 	{
-		return isset($this->models[0]) ? $this->models[0] : null;
+		$models = $this->get();
+
+		return isset($models[0]) ? $models[0] : null;
 	}
 
 	public function last()
 	{		
-		$total = count($this->models) - 1;
+		$models = $this->get();
+		$total = $this->count() - 1;
 
-		return isset($this->models[$total]) ? $this->models[$total] : null;
+		return isset($models[$total]) ? $models[$total] : null;
 	}
 
 	public function count()
 	{
-		return $this->count;
+		if(!is_null($this->count))
+		{
+			return $this->count;
+		}
+
+		return count($this->models);
 	}
 
 	public function each($closure)
 	{
-		foreach($this->models as $item)
+		foreach($this->models as $x => $item)
 		{
-			$closure($item);
+			$closure($item, $x);
 		}
+	}
+
+	public function get()
+	{
+		return $this->models;
 	}
 
 	public function push($model)
@@ -153,21 +165,16 @@ abstract class BaseCollection {
 
 	public function parse($response)
 	{
-		if(isset($response->data))
+		$class = $this->model;
+
+		$this->fill($response);
+		
+		if(isset($response->data) && is_array($response->data))
 		{
-			foreach($response as $param => $value)
+			foreach($response->data as $index => $model)
 			{
-				if(property_exists($this, $param))
-				{
-					$this->$param = $value;
-				}
+				$this->models[] = new $class($model);
 			}
-			
-			$this->fill($response->data);
-		}
-		else
-		{
-			$this->fill($response);
 		}
 	}
 
@@ -223,7 +230,7 @@ abstract class BaseCollection {
 		return $response;
 	}
 
-	public static function all(Array $query = array())
+	public static function all($query = array())
 	{	
 		$obj = new static;
 
@@ -270,42 +277,6 @@ abstract class BaseCollection {
 
 		return $builder;
 	}
-
-	/*
-	public static function param($param, $value)
-	{
-		$builder = new QueryBuilder(get_called_class());
-		$builder->param($param, $value);
-
-		return $builder;
-	}
-
-
-
-	public static function page($page)
-	{
-		$builder = new QueryBuilder();
-		$builder->page($page);
-
-		return $builder;
-	}
-
-	public static function param($param, $value)
-	{
-		$builder = new QueryBuilder();
-		$builder->param($param, $value);
-
-		return $builder;
-	}
-
-	public static function param($param, $value)
-	{
-		$builder = new QueryBuilder(get_called_class());
-		$builder->param($param, $value);
-
-		return $builder;
-	}
-	*/
 
 	public static function query(Array $query = array())
 	{

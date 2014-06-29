@@ -2,8 +2,7 @@
 
 use Timeblocker\Components\BaseModel;
 
-class AppointmentType extends BaseModel {
+class Existing extends BaseModel {
 	
-	protected $endpoint = 'type';
+	protected $endpoint = 'appointment';
 }
-	

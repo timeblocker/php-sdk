@@ -13,9 +13,9 @@ class Schedule extends AppointmentCollection {
 
 	protected $endpoint = 'schedule';
 
-	public function __construct()
+	public function __construct($params = array())
 	{
-		parent::__construct();
+		parent::__construct($params = array());
 
 		if(!$this->start)
 		{

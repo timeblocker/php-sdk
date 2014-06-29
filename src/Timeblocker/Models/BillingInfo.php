@@ -16,8 +16,6 @@ class BillingInfo extends NoUidModel {
 
 	public function upgrade(Plan $plan)
 	{		
-		var_dump($plan);exit();
-		
 		$request = new HttpRequest(array(
 			'endpoint' => 'upgrade/' . $plan->uid
 		));

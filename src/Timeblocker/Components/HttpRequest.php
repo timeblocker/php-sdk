@@ -16,6 +16,8 @@ class HttpRequest {
 
 	protected $files = array();
 
+	protected $saveTo = false;
+
 	public function __construct($params = array())
 	{
 		if(is_array($params))
@@ -27,12 +29,12 @@ class HttpRequest {
 		}
 	}
 
-	public function endpoint()
+	public function getEndpoint()
 	{
-		return rtrim(Timeblocker::getVersion(), '/') . '/' . $this->endpoint;
+		return $this->endpoint;
 	}
 
-	public function client()
+	public function getClient()
 	{
 		$body = $this->getBody();
 
@@ -41,18 +43,30 @@ class HttpRequest {
 			$body[$file->name] = fopen($file->path, 'r');
 		}
 
+		$defaults = array(
+			//'headers' => $this->getHeaders(),
+			'query'   => $this->getQuery(),
+			'body'    => $body,
+		);
+
+		if($this->saveTo)
+		{
+			$defaults['save_to'] = $this->saveTo;
+		}
+
+		if($headers = $this->getHeaders())
+		{
+			$defaults['headers'] = $headers;
+		}
+
 		return new Client(array(
-			'defaults' => array(
-				'headers' => $this->getHeaders(),
-				'query'   => $this->getQuery(),
-				'body'    => $body,
-			)
+			'defaults' => $defaults
 		));
 	}
 
 	public function get()
 	{
-		$client = $this->client();
+		$client = $this->getClient();
 
 		try
 		{
@@ -71,7 +85,7 @@ class HttpRequest {
 
 	public function delete()
 	{
-		$client = $this->client();
+		$client = $this->getClient();
 
 		try
 		{		
@@ -90,7 +104,7 @@ class HttpRequest {
 
 	public function put()
 	{
-		$client = $this->client();
+		$client = $this->getClient();
 		
 		try
 		{		
@@ -116,7 +130,12 @@ class HttpRequest {
 
 	public function post($data = array())
 	{
-		$client = $this->client();
+		if(count($data))
+		{
+			$this->query = $data;
+		}
+
+		$client = $this->getClient();
 		
 		try
 		{		
@@ -145,11 +164,14 @@ class HttpRequest {
 
 	public function getHeaders()
 	{
-		return array(
-			'key' 	   => Timeblocker::getKey(),
-			'username' => Timeblocker::getUsername(),
-			'password' => Timeblocker::getPassword(),
-		);
+		$return = array();
+
+		if($token = Timeblocker::getAuthToken())
+		{
+			$return['authToken'] = $token;
+		}
+
+		return $return;
 	}
 
 	public function addFile($name, $path)
@@ -218,7 +240,9 @@ class HttpRequest {
 
 	public function url($query = false)
 	{	
-		return Timeblocker::getProtocol() . Timeblocker::getAccount() . '.' . rtrim(Timeblocker::getDomain(), '/') . '/' . $this->endpoint();
+		return rtrim(Timeblocker::getApiUrl(), '/') . '/' . $this->getEndpoint();
+
+		//return Timeblocker::getProtocol() . Timeblocker::getAccount() . '.' . rtrim(Timeblocker::getDomain(), '/') . '/' . $this->endpoint();
 	}
 }
 
@@ -261,7 +285,7 @@ class HttpRequest {
 	{
 		$this->query = $builder->getQuery();
 
-		$response = $this->client()->get();
+		$response = $this->getClient()->get();
 
 		return $this->responseHandler($response);
 	}

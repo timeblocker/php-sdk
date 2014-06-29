@@ -7,11 +7,41 @@ class Timeslot extends BaseModel {
 	
 	protected $endpoint = 'timeslot';
 
+	public function __construct($data = array())
+	{
+		parent::__construct($data);
+
+		if(isset($this->client))
+		{
+			$this->client = new Client($this->client);
+		}
+		else
+		{
+			$this->client = null;
+		}
+
+		if(isset($this->host))
+		{
+			$this->host = new Host($this->host);
+		}
+		else
+		{
+			$this->host = null;
+		}
+	}
+
 	public function properties()
 	{
+		$start = NULL;
+
 		$properties = parent::properties();
 
-		$properties['date'] = $this->start;
+		if(isset($this->start))
+		{
+			$start = $this->start;
+		}
+
+		$properties['date'] = $start;
 
 		return $properties;
 	}
