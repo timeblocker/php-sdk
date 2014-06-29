@@ -23,7 +23,7 @@ If you want to use the Timeblocker SDK without changing your `minimum-stability`
 
     "require-dev": {
         "timeblocker/timeblocker": "0.9.*"
-    },
+    }
 
 ### Development Status
 
