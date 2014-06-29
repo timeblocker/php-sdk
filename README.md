@@ -19,7 +19,7 @@ While the API and SDK is in beta, you must also set your `minimum-stability` par
 
     "minimum-stability": "dev"
 
-If you want to use the Timeblocker SDK without changing your `minimum-stability`, use the `require-dev` parameter.
+If you want to use the Timeblocker SDK without changing your `minimum-stability`, use the `require-dev` parameter instead of `require`.
 
     "require-dev": {
         "timeblocker/timeblocker": "0.9.*"
