@@ -2,7 +2,7 @@
 
 ### Overview
 
-This is the officially supported development kit for PHP to interface with [Timeblocker](http://timeblocker.co/ "Timeblocker"). This library takes a couple of design principles from Backbone.js and Laravel and combine them together to create a full REST client for [Timeblocker](http://timeblocker.co/ "Timeblocker"). Timeblocker has over 100 endpoints for developers, and this library interacts will all them.
+This is the officially supported development kit for PHP to interface with the [Timeblocker](http://timeblocker.co/ "Timeblocker"). This library takes a couple of design principles from Backbone.js and Laravel and combine them together to create a full REST client for the [Timeblocker API](http://timeblocker.co/docs/api/v1/ "Timeblocker"). Timeblocker has over 100 endpoints for developers, and this library interacts will all them.
 
 ### Getting Started
 
