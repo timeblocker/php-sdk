@@ -33,7 +33,7 @@ Timeblocker requires authenticating with a user account before making API reques
 	$token = AuthToken::login(array(
 		'email' => 'you@example.com', 
 		'password' => 'password',
-		'key' => '25c1fdd6-7ac9-412c-991d-7ac92f51f438',
+		'key' => 'yourkey',
 		'remember' => 1
 	));
 
