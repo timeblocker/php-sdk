@@ -1,6 +1,7 @@
-    {
+{
     "name": "timeblocker/timeblocker",
-    "description": "",
+    "description": "The official Timeblocker PHP SDK",
+    "version": "0.9.0",
     "authors": [
         {
             "name": "Timeblocker, LLC",
