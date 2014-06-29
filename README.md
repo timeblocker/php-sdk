@@ -15,7 +15,7 @@ To install this library, it's highly recommended you use [Composer](https://getc
         "timeblocker/timeblocker": "0.9.*"
     }
 
-While the API and SDK are in beta, you must also set your `minimum-stability` paramter to `dev`.
+While the API and SDK is in beta, you must also set your `minimum-stability` paramter to `dev`.
 
     "minimum-stability": "dev"
 
